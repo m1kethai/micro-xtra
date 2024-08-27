@@ -1,0 +1,43 @@
+filetype: nix
+
+detect:
+    filename: "\\.nix$"
+
+rules:
+    - keyword: "\\b(let|in|if|else|then|with|assert|rec|inherit|or)\\b"
+    - operator: "(==|!=|<=|>=|<|>|\\+|\\-|\\*|/|\\?|:)\\b"
+    - operator: "(=|\\.|;|,|\\{|\\}|\\(|\\)|\\[|\\]|@|\\&)\\b"
+    - function: "\\b(import|abort|baseNameOf|dirOf|isNull|map|toString|fetchurl|derivation)\\b"
+    - constant: "\\b(true|false|null)\\b"
+    - number: "\\b\\d+(\\.\\d+)?\\b"
+    - path: "(~?/\\S+|<[^>]+>)"
+    - url: "(https?|ftp)://[\\w\\-\\.!~?&+@#/%=\\:]+"
+
+    - constant.string:
+        start: "\\\""
+        end: "\\\""
+        skip: "\\\\."
+        rules:
+            - constant.specialChar: "\\\\[abfnrtv'\"\\\\]"
+            - constant.specialChar: "\\\\u[A-Fa-f0-9]{4}"
+            - constant.specialChar: "\\\\U[A-Fa-f0-9]{8}"
+
+    - constant.string:
+        start: "''"
+        end: "''"
+        rules: []
+
+    - comment:
+        start: "#"
+        end: "$"
+        rules: []
+
+    - interpolation:
+        start: "\\${"
+        end: "}"
+        rules:
+            - keyword: "\\b(let|in|if|else|then|with|assert|rec|inherit|or)\\b"
+            - operator: "(==|!=|<=|>=|<|>|\\+|\\-|\\*|/|\\?|:)\\b"
+            - constant: "\\b(true|false|null)\\b"
+            - number: "\\b\\d+(\\.\\d+)?\\b"
+            - path: "(~?/\\S+|<[^>]+>)"
